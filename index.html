@@ -1,0 +1,149 @@
+!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Table Demo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 80%;
+            margin: 20px auto;
+        }
+
+        th, td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        button {
+            padding: 5px 10px;
+            background-color: #3498db;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Dynamic Table Demo</h1>
+    <table id="dataTable">
+        <thead>
+            <tr>
+                <th>
+                    Row Num
+                    <button onclick="sortTable('rowNum')">Sort</button>
+                </th>
+                <th>
+                    Name
+                    <button onclick="sortTable('name')">Sort</button>
+                </th>
+                <th>
+                    Location
+                    <button onclick="sortTable('location')">Sort</button>
+                </th>
+                <th>
+                    CGPA
+                    <button onclick="sortTable('cgpa')">Sort</button>
+                </th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Initially, no rows in the table -->
+        </tbody>
+    </table>
+    <button id="addRow">Add Row</button>
+
+    <script>
+        let rowNum = 1; // Initialize the row number counter
+
+        // Function to add a new row to the table
+        function addRow() {
+            const table = document.getElementById("dataTable");
+            const tbody = table.getElementsByTagName('tbody')[0];
+            const newRow = tbody.insertRow();
+
+            const rowNumCell = newRow.insertCell(0);
+            rowNumCell.textContent = rowNum++;
+
+            const nameCell = newRow.insertCell(1);
+            nameCell.innerHTML = '<input type="text" value="New Name">';
+
+            const locationCell = newRow.insertCell(2);
+            locationCell.innerHTML = '<input type="text" value="New Location">';
+
+            const cgpaCell = newRow.insertCell(3);
+            cgpaCell.innerHTML = '<input type="text" value="New CGPA">';
+
+            const actionCell = newRow.insertCell(4);
+            actionCell.innerHTML = '<button onclick="updateRow(this)">Update</button> <button onclick="deleteRow(this)">Delete</button>';
+        }
+
+        // Function to update a row
+        function updateRow(button) {
+            const row = button.parentElement.parentElement;
+            const name = row.cells[1].querySelector('input').value;
+            const location = row.cells[2].querySelector('input').value;
+            const cgpa = row.cells[3].querySelector('input').value;
+            // You can perform further actions like updating data in your application here.
+        }
+
+        // Function to delete a row
+        function deleteRow(button) {
+            const row = button.parentElement.parentElement;
+            row.parentNode.removeChild(row);
+        }
+
+        // Function to sort the table by the specified column
+        function sortTable(columnName) {
+            const table = document.getElementById("dataTable");
+            const tbody = table.getElementsByTagName('tbody')[0];
+            const rows = Array.from(tbody.getElementsByTagName('tr'));
+
+            rows.sort((a, b) => {
+                const cellA = a.cells[getHeaderIndex(columnName)].textContent;
+                const cellB = b.cells[getHeaderIndex(columnName)].textContent;
+
+                if (!isNaN(cellA) && !isNaN(cellB)) {
+                    return cellA - cellB;
+                } else {
+                    return cellA.localeCompare(cellB);
+                }
+            });
+
+            while (tbody.firstChild) {
+                tbody.removeChild(tbody.firstChild);
+            }
+
+            for (const row of rows) {
+                tbody.appendChild(row);
+            }
+        }
+
+        // Function to get the header index of a column
+        function getHeaderIndex(columnName) {
+            const headers = document.getElementById("dataTable").getElementsByTagName('th');
+            for (let i = 0; i < headers.length; i++) {
+                if (headers[i].textContent.trim() === columnName) {
+                    return i;
+                }
+            }
+            return -1;
+        }
+
+        // Event listener for the "Add Row" button
+        document.getElementById("addRow").addEventListener("click", addRow);
+    </script>
+</body>
+</html>
